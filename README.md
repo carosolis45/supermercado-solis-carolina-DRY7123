@@ -22,3 +22,17 @@ Incluye navegación entre múltiples pantallas utilizando **React Router**.
 2. Instalar las dependencias con `npm install`.
 3. Ejecutar el servidor local con `npm run dev`.
 4. Abrir el navegador en `http://localhost:5173/`.
+
+## Vistas previas del proyecto
+
+**Inicio (Home)**
+![Captura de pantalla del Supermercado](./capturas/Captura%20de%20pantalla%20del%20Supermercado.png)
+
+**Quiénes Somos**
+![Captura de pantalla Quiénes Somos](./capturas/Captura%20de%20pantalla%20quienes%20somos.png)
+
+**Contáctanos**
+![Captura de pantalla Contáctanos](./capturas/Captura%20de%20pantalla%20contactanos.png)
+
+🔗 **Enlace al repositorio:** 
+https://github.com/carosolis45/supermercado-solis-carolina-DRY7123
