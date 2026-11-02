@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 * { 
   margin: 0; 
   padding: 0; 
@@ -6,7 +10,6 @@
 
 body {
   font-family: 'Segoe UI', Tahoma, sans-serif;
-  /* Fondo oscuro elegante */
   background-color: #121212; 
   color: #e0e0e0;
 }
