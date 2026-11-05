@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { useInventario } from '../context/InventarioContext';
 import { useNavigate } from 'react-router-dom';
+import InputField from '../components/InputField'; // <-- Importamos
 
 export default function AgregarArticulo() {
   const { agregarArticulo } = useInventario();
   const navigate = useNavigate();
-  
-  // Agregamos precio y stock al estado inicial
   const [form, setForm] = useState({ nombre: '', marca: '', tipo: '', precio: '', stock: '' });
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Convertimos precio y stock a números antes de guardarlos
     agregarArticulo({
       ...form,
       precio: Number(form.precio),
@@ -24,33 +26,17 @@ export default function AgregarArticulo() {
     <div className="max-w-md mx-auto mt-10 p-6 bg-[#1e1e1e] border border-[#333] rounded-xl shadow-lg text-white">
       <h2 className="text-2xl font-bold text-[#4caf50] mb-6">Agregar Artículo</h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-        <div>
-          <label className="block mb-1 text-sm font-semibold">Nombre del Producto</label>
-          <input required type="text" className="w-full p-2 rounded bg-[#121212] border border-[#444] focus:outline-none focus:border-[#4caf50] text-white" 
-                 onChange={(e) => setForm({...form, nombre: e.target.value})} />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-semibold">Marca</label>
-          <input required type="text" className="w-full p-2 rounded bg-[#121212] border border-[#444] focus:outline-none focus:border-[#4caf50] text-white" 
-                 onChange={(e) => setForm({...form, marca: e.target.value})} />
-        </div>
-        <div>
-          <label className="block mb-1 text-sm font-semibold">Tipo de Producto</label>
-          <input required type="text" className="w-full p-2 rounded bg-[#121212] border border-[#444] focus:outline-none focus:border-[#4caf50] text-white" 
-                 onChange={(e) => setForm({...form, tipo: e.target.value})} />
-        </div>
         
-        {/* NUEVOS CAMPOS: Precio y Stock */}
+        <InputField label="Nombre del Producto" type="text" name="nombre" value={form.nombre} onChange={handleChange} />
+        <InputField label="Marca" type="text" name="marca" value={form.marca} onChange={handleChange} />
+        <InputField label="Tipo de Producto" type="text" name="tipo" value={form.tipo} onChange={handleChange} />
+        
         <div className="flex gap-4">
           <div className="flex-1">
-            <label className="block mb-1 text-sm font-semibold">Precio (CLP)</label>
-            <input required type="number" className="w-full p-2 rounded bg-[#121212] border border-[#444] focus:outline-none focus:border-[#4caf50] text-white" 
-                   onChange={(e) => setForm({...form, precio: e.target.value})} />
+            <InputField label="Precio (CLP)" type="number" name="precio" value={form.precio} onChange={handleChange} min="1" />
           </div>
           <div className="flex-1">
-            <label className="block mb-1 text-sm font-semibold">Stock</label>
-            <input required type="number" className="w-full p-2 rounded bg-[#121212] border border-[#444] focus:outline-none focus:border-[#4caf50] text-white" 
-                   onChange={(e) => setForm({...form, stock: e.target.value})} />
+            <InputField label="Stock" type="number" name="stock" value={form.stock} onChange={handleChange} min="1" />
           </div>
         </div>
 

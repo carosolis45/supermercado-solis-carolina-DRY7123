@@ -1,31 +1,81 @@
 import { createContext, useContext, useState } from 'react';
+import { productosIniciales } from '../data/productosIniciales';
 
-// 1. Creamos el contexto
 const InventarioContext = createContext();
 
-// 2. Creamos el Proveedor (Provider) que envolverá la app
 export function InventarioProvider({ children }) {
-  // ESTADO GLOBAL: Lista de artículos
-  const [inventario, setInventario] = useState([]);
+  // 1. Inicializamos con los productos (Sugerencia del profe)
+  const [inventario, setInventario] = useState(productosIniciales);
+  // 2. Estado para el carrito
+  const [carrito, setCarrito] = useState([]);
 
-  // Función para agregar un artículo
   const agregarArticulo = (nuevoArticulo) => {
-    // Le agregamos un ID único usando la fecha actual
-    setInventario([...inventario, { id: Date.now(), ...nuevoArticulo }]);
+    const articuloConId = { 
+      ...nuevoArticulo, 
+      id: crypto.randomUUID() // Usamos UUID como fue sugerido
+    };
+    // Actualización funcional para evitar cierres obsoletos
+    setInventario(prev => [...prev, articuloConId]);
+  };
+
+  // Función para agregar al carrito (descuenta stock)
+  const agregarAlCarrito = (producto, cantidad) => {
+    // Verificamos si hay stock suficiente
+    if (producto.stock < cantidad) return false;
+
+    // Descontamos del inventario
+    setInventario(prev => prev.map(p => 
+      p.id === producto.id ? { ...p, stock: p.stock - cantidad } : p
+    ));
+
+    // Agregamos al carrito (si ya existe, sumamos la cantidad)
+    setCarrito(prev => {
+      const existe = prev.find(item => item.id === producto.id);
+      if (existe) {
+        return prev.map(item => item.id === producto.id ? { ...item, cantidad: item.cantidad + cantidad } : item);
+      }
+      return [...prev, { ...producto, cantidad }];
+    });
+    return true;
+  };
+
+  // Función para modificar cantidad desde el carrito
+  const modificarCantidadCarrito = (id, nuevaCantidad) => {
+    const itemCarrito = carrito.find(item => item.id === id);
+    const productoInventario = inventario.find(p => p.id === id);
+    
+    const diferencia = nuevaCantidad - itemCarrito.cantidad;
+
+    // Si quiere aumentar, verificamos stock
+    if (diferencia > 0 && productoInventario.stock < diferencia) return false;
+
+    // Actualizamos inventario (si aumenta, resta stock; si disminuye, devuelve stock)
+    setInventario(prev => prev.map(p => 
+      p.id === id ? { ...p, stock: p.stock - diferencia } : p
+    ));
+
+    // Actualizamos carrito
+    setCarrito(prev => prev.map(item => 
+      item.id === id ? { ...item, cantidad: nuevaCantidad } : item
+    ));
+    return true;
   };
 
   return (
-    <InventarioContext.Provider value={{ inventario, agregarArticulo }}>
+    <InventarioContext.Provider value={{ 
+      inventario, 
+      agregarArticulo, 
+      carrito, 
+      agregarAlCarrito, 
+      modificarCantidadCarrito 
+    }}>
       {children}
     </InventarioContext.Provider>
   );
 }
 
-// 3. Hook personalizado para usar el contexto fácilmente
 export function useInventario() {
   const context = useContext(InventarioContext);
-  if (!context) {
-    throw new Error('useInventario debe usarse dentro de un InventarioProvider');
-  }
+  if (!context) throw new Error('useInventario debe usarse dentro de un InventarioProvider');
   return context;
 }
